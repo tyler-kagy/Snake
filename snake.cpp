@@ -7,11 +7,11 @@ using namespace std;
 
 string grid[10][10];
 int score = 0;
-int food_x = rand() % 10;
-int food_y = rand() % 10;
-int snake_x;
-int snake_y;
-int init_dir = rand() % 4;
+int food_row;
+int food_col;
+int snake_row;
+int snake_col;
+int init_dir;
 
 void display()
 {
@@ -26,29 +26,33 @@ void display()
     }
 }
 
-void update()
+void clear()
 {
     cout << "\033[1;1H\033[2J"; // clear the screen and return to line zero
 }
 
 void spawn_food()
 {
-    grid[food_x][food_y] = "🍔";
+    food_row = rand() % 10;
+    food_col = rand() % 10;
+    grid[food_row][food_col] = "🍔";
 }
 
 void spawn_snake()
 {
-    // random initial location != food location
-    snake_x = food_x;
-    snake_y = food_y;
+    init_dir = rand()%4;
 
-    while (snake_x == food_x && snake_y == food_y)
+    // random initial location != food location
+    snake_row = food_row;
+    snake_col = food_col;
+
+    while (snake_row == food_row && snake_col == food_col)
     {
-        snake_x = rand() % 10;
-        snake_y = rand() % 10;
+        snake_row = rand() % 10;
+        snake_col = rand() % 10;
     }
 
-    grid[snake_x][snake_y] = "🐍";
+    grid[snake_row][snake_col] = "🐍";
 }
 
 int main()
@@ -69,54 +73,54 @@ int main()
         }
     }
 
-    update();
+    clear();
     spawn_food();
     spawn_snake();
 
     while (!dead)
     {
         display();
-        sleep_for(seconds(1));
+        sleep_for(milliseconds(500));
 
         // TODO: Move endlessly in initial direction at 1 space per second
-        // allow for rollover at edges (seems to disappear on top edge)
-        grid[snake_x][snake_y] = " ";
+        // use modulo instead of if/else
+        grid[snake_row][snake_col] = " ";
         switch (init_dir)
         {
         case 0:
             // Left
-            if (snake_y != 0)
-                grid[snake_x][snake_y - 1] = "🐍";
+            if (snake_col != 0)
+                //grid[snake_row][snake_col - 1] = "🐍";
+                snake_col -= 1;
             else
-                grid[snake_x][9] = "🐍";
+                //grid[snake_row][9] = "🐍";
+                snake_col = 9;
             break;
         case 1:
             /// Up
-            if (snake_x != 0)
-                grid[snake_x - 1][snake_y] = "🐍";
+            if (snake_row != 0)
+                //grid[snake_row - 1][snake_col] = "🐍";
+                snake_row -= 1;
             else
-                grid[10][snake_y] = "🐍";
+                //grid[9][snake_col] = "🐍";
+                snake_row = 9;
             break;
         case 2:
             // Right
-            if (snake_y != 9)
-                grid[snake_x][snake_y + 1] = "🐍";
-            else
-                grid[snake_x][0] = "🐍";
+                //grid[snake_row][(snake_col + 1)%10] = "🐍";
+                snake_col = (snake_col + 1) % 10;
             break;
         case 3:
             // Down
-            if (snake_x != 9)
-                grid[snake_x + 1][snake_y] = "🐍";
-            else
-                grid[0][snake_y] = "🐍";
+                //grid[(snake_row + 1)%10][snake_col] = "🐍";
+                snake_row = (snake_row + 1) % 10;
             break;
         }
 
-        update();
-    }
+        grid[snake_row][snake_col] = "🐍";
 
-    update();
+        clear();
+    }
 
     // create borders
     // |=========|
