@@ -11,7 +11,7 @@ int food_row;
 int food_col;
 int snake_row;
 int snake_col;
-int init_dir;
+int direction;
 
 void display()
 {
@@ -40,7 +40,7 @@ void spawn_food()
 
 void spawn_snake()
 {
-    init_dir = rand()%4;
+    direction = rand()%4;
 
     // random initial location != food location
     snake_row = food_row;
@@ -82,10 +82,9 @@ int main()
         display();
         sleep_for(milliseconds(500));
 
-        // TODO: Move endlessly in initial direction at 1 space per second
-        // use modulo instead of if/else
+        // TODO: use modulo instead of if/else for all cases
         grid[snake_row][snake_col] = " ";
-        switch (init_dir)
+        switch (direction)
         {
         case 0:
             // Left
